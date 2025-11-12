@@ -1,6 +1,7 @@
 from maxapi.types import MessageCreated, BotStarted, Command, MessageCallback
 from src.core.loader import Message
 
+from maxapi.filters import F
 from maxapi.types.updates.message_callback import MessageForCallback
 from maxapi.types.attachments.buttons.attachment_button import AttachmentButton
 
@@ -10,10 +11,6 @@ def setup(bot, dp):
         'Доступные команды:'
         '\n/команды - список доступных команд'
         '\n/информация - информация для абитуриентов'
-
-
-        '\n\nAvailable commands:'
-        '\n/information - information for '
     )
 
     @dp.bot_started()
@@ -26,13 +23,7 @@ def setup(bot, dp):
 
     @dp.message_created(Command('информация'))
     async def start_ru(event: MessageCreated):
-        message = Message("ру/информация")
-
-        await event.message.answer(text=message.text, attachments=[message.builder.as_markup()])
-
-    @dp.message_created(Command('information'))
-    async def start_ru(event: MessageCreated):
-        message = Message("англ/информация")
+        message = Message("ру/_информация")
 
         await event.message.answer(text=message.text, attachments=[message.builder.as_markup()])
 

@@ -4,6 +4,8 @@ import logging
 from maxapi.types import MessageCreated, BotStarted, Command, CallbackButton, MessageCallback
 from maxapi.utils.inline_keyboard import InlineKeyboardBuilder
 
+from data.custom_data import custom_data
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,45 +20,22 @@ def load_file(path):
 
 class Message:
     def __init__(self, message_path):
-        data, message_id = self.load_message(message_path)
-        if not data: raise FileNotFoundError(f'Файл сообщения {message_path}.json не найден.')
+        data = self.load_message(message_path)
+        if not data:
+            raise FileNotFoundError(f'Файл сообщения {message_path}.json не найден.')
 
-        if data["text"] != "custom":
-            self.text = data["text"]
-        else:
-            from data.custom_messages import load_custom_message
-            self.text = load_custom_message(message_id)
-
+        self.text = data["text"]
         self.builder = InlineKeyboardBuilder()
 
         for row, buttons in data.get("buttons", {}).items():
-            button_objs = []
-            for button_id in buttons:
-                button_objs.append(Button(button_id))
-
-            if not button_objs:
-                continue
-
-            callback_buttons = [CallbackButton(text=b.title, payload=b.message) for b in button_objs]
-
-            self.builder.row(*callback_buttons)
-
+            callback_buttons = [CallbackButton(text=btn[0], payload=btn[1]) for btn in buttons]
+            if callback_buttons:
+                self.builder.row(*callback_buttons)
 
     def load_message(self, message_path):
         path = 'data/messages'
         path = os.path.join(path, f'{message_path}.json')
-        return load_file(path), os.path.basename(path)
+        data = custom_data(message_path)
+        if not data: data = load_file(path)
 
-
-class Button:
-    def __init__(self, button_path):
-        data = self.load_button(button_path)
-        if not data: raise FileNotFoundError(f'Файл кнопки {button_path}.json не найден')
-
-        self.title = data["title"]
-        self.message = data["message"]
-
-    def load_button(self, button_path):
-        path = 'data/buttons'
-        path = os.path.join(path, f'{button_path}.json')
-        return load_file(path)
+        return data
