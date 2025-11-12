@@ -1,5 +1,4 @@
-from maxapi.types import MessageCreated
-from maxapi import F
+import importlib, os
 
 class MAXBot:
     def __init__(self, bot, dp):
@@ -7,8 +6,11 @@ class MAXBot:
         self.dp = dp
 
     def load_cogs(self):
-        dp = self.dp
+        cogs_dir = 'src/cogs'
+        for file in os.listdir(cogs_dir):
+            if file.endswith('.py'):
+                module_name = f"src.cogs.{file[:-3]}"
+                module = importlib.import_module(module_name)
+                module.setup(self.bot, self.dp)
 
-        @dp.message_created(F.message.body.text)
-        async def echo(event: MessageCreated):
-            await event.message.answer(f"{event.message.body.text}")
+
