@@ -6,26 +6,33 @@ from maxapi.types.attachments.buttons.attachment_button import AttachmentButton
 
 def setup(bot, dp):
 
+    info_text = (
+        'Доступные команды:'
+        '\n/команды - список доступных команд'
+        '\n/информация - информация для абитуриентов'
+
+
+        '\n\nAvailable commands:'
+        '\n/information - information for '
+    )
+
     @dp.bot_started()
     async def bot_started(event: BotStarted):
-        await bot.send_message(
-            chat_id=event.chat_id,
-            text='Доступные команды:\n'
-                 '/info\n'
-                 '/test'
-        )
+        await bot.send_message(chat_id=event.chat_id, text=info_text)
 
-    @dp.message_created(Command('info'))
+    @dp.message_created(Command('команды'))
     async def info(event: MessageCreated):
-        await event.message.answer(
-            text='Доступные команды:\n'
-                 '/info\n'
-                 '/test'
-        )
+        await event.message.answer(text=info_text)
 
-    @dp.message_created(Command('test'))
-    async def test(event: MessageCreated):
-        message = Message("start1")
+    @dp.message_created(Command('информация'))
+    async def start_ru(event: MessageCreated):
+        message = Message("ру/информация")
+
+        await event.message.answer(text=message.text, attachments=[message.builder.as_markup()])
+
+    @dp.message_created(Command('information'))
+    async def start_ru(event: MessageCreated):
+        message = Message("англ/информация")
 
         await event.message.answer(text=message.text, attachments=[message.builder.as_markup()])
 
