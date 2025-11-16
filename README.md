@@ -23,6 +23,7 @@ BOT_TOKEN=токен_бота
 ### Запуск бота напрямую
 В корневой директории проекта:
 ```bash
+pip install -r requirements.txt
 python main.py
 ```
 
